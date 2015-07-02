@@ -79,6 +79,8 @@ function tests(dbName, dbType) {
                             :where [?id "last_name" "benson"]]').then(function (response) {
         response.should.eql([['1']]);
         done();
+      }).catch(function (err) {
+        console.error(err);
       });
     });
   });
