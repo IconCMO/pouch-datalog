@@ -37,11 +37,28 @@ function tests(dbName, dbType) {
 
   beforeEach(function (done) {
     db = new Pouch(dbName);
-    db.put({
-      _id: "1",
-      label: "last_name",
-      value: "benson"
-    }).then(function () {
+    db.bulkDocs([
+      {
+        _id: "1",
+        label: "last_name",
+        value: "benson"
+      },
+      {
+        _id: "2",
+        label: "first_name",
+        value: "george"
+      },
+      {
+        _id: "3",
+        label: "last_name",
+        value: "henderson"
+      },
+      {
+        _id: "4",
+        label: "first_name",
+        value: "george"
+      }
+    ]).then(function () {
       return db.put({
         _id: "_design/eav",
         language: "javascript",
@@ -78,6 +95,16 @@ function tests(dbName, dbType) {
                             :in \
                             :where [?id "last_name" "benson"]]').then(function (response) {
         response.should.eql([['1']]);
+        done();
+      }).catch(function (err) {
+        console.error(err);
+      });
+    });
+    it('should have a dataquery method', function (done) {
+      db.dataquery('[:find ?id \
+                            :in \
+                            :where [?id "first_name" "george"]]').then(function (response) {
+        response.should.eql([['2'], ['4']]);
         done();
       }).catch(function (err) {
         console.error(err);
