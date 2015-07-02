@@ -70,7 +70,7 @@ function tests(dbName, dbType) {
     });
   });
   afterEach(function () {
-    return Pouch.destroy(dbName);
+    return db.destroy();
   });
   describe(dbType + ': dataquery test suite', function () {
     it('should have a dataquery method', function (done) {
