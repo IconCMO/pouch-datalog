@@ -41,17 +41,17 @@ function tests(dbName, dbType) {
       {
         _id: "1",
         label: "last_name",
-        value: "benson"
+        value: "Benson"
       },
       {
         _id: "2",
         label: "first_name",
-        value: "george"
+        value: "George"
       },
       {
         _id: "3",
         label: "last_name",
-        value: "henderson"
+        value: "Henderson"
       },
       {
         _id: "4",
@@ -64,8 +64,12 @@ function tests(dbName, dbType) {
         language: "javascript",
         views: {
           eav: {
-            map: "function(doc) {\n\
-              emit([doc._id,doc.label,doc.value],[doc._id,doc.label,doc.value]);\n\
+            map: "function(doc) { \
+              emit([ \
+                doc._id, doc.label.toLowerCase(), doc.value.toLowerCase() \
+              ], [ \
+                doc._id, doc.label, doc.value \
+              ]); \
             }"
           }
         }
@@ -76,8 +80,12 @@ function tests(dbName, dbType) {
         language: "javascript",
         views: {
           ave: {
-            map: "function(doc) {\n\
-              emit([doc.label,doc.value,doc._id],[doc._id,doc.label,doc.value]);\n\
+            map: "function(doc) { \
+              emit([ \
+                doc.label.toLowerCase(), doc.value.toLowerCase(), doc._id \
+              ], [ \
+                doc._id, doc.label, doc.value \
+              ]); \
             }"
           }
         }
@@ -90,21 +98,22 @@ function tests(dbName, dbType) {
     return db.destroy();
   });
   describe(dbType + ': dataquery test suite', function () {
-    it('should have a dataquery method', function (done) {
+    it('should have a dataquery method that works', function (done) {
       db.dataquery('[:find ?id \
                             :in \
-                            :where [?id "last_name" "benson"]]').then(function (response) {
+                            :where [?id "last_name" "Benson"]]').then(function (response) {
         response.should.eql([['1']]);
         done();
       }).catch(function (err) {
         console.error(err);
       });
     });
-    it('should have a dataquery method', function (done) {
-      db.dataquery('[:find ?id \
+    it('case insensitivity works (if views are set up with lowercasing as above)', function (done) {
+      db.dataquery('[:find ?id ?first_name \
                             :in \
-                            :where [?id "first_name" "george"]]').then(function (response) {
-        response.should.eql([['2'], ['4']]);
+                            :where [?id "first_name" "george"] \
+                                   [?id "first_name" ?first_name]]').then(function (response) {
+        response.should.eql([['2', 'George'], ['4', 'george']]);
         done();
       }).catch(function (err) {
         console.error(err);

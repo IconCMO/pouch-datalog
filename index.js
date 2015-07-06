@@ -3,6 +3,13 @@
 var utils = require('./pouch-utils');
 var datascript = require('datascript-async');
 
+var lowerCase = function (key) {
+  if (!key) {
+    return key;
+  }
+  return key.toLowerCase();
+};
+
 exports.dataquery = utils.toPromise(function (query, dataquery_callback) {
   var self = this;
   var searchPouchIndex = function (db, index) {
@@ -15,6 +22,10 @@ exports.dataquery = utils.toPromise(function (query, dataquery_callback) {
         startkey = [startkey.a, startkey.v, startkey.e];
         endkey = [endkey.a, endkey.v, endkey.e];
       }
+
+      startkey = startkey.map(lowerCase);
+      endkey = endkey.map(lowerCase);
+
       endkey = endkey.map(function (el) {
         if (el === null) {
           return {};
