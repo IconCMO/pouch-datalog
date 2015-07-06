@@ -38,6 +38,9 @@ exports.dataquery = utils.toPromise(function (query, dataquery_callback) {
   var db = datascript.set_indexes(searchPouchIndex(self, "eav"), searchPouchIndex(self, "ave"));
 
   return datascript.q(function (err, data) {
+    if (err) {
+      return err;
+    }
     return dataquery_callback(null, data);
   }, query, db);
 });
