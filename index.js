@@ -1,7 +1,7 @@
 'use strict';
 
 var utils = require('./pouch-utils');
-var datascript = require('../datascript/release-js/datascript.js');
+var datascript = require('datascript-async');
 
 exports.dataquery = utils.toPromise(function (query, dataquery_callback) {
   var self = this;
